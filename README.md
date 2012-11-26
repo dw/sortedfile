@@ -11,10 +11,10 @@ When a file is already sorted (in the case of Apache logs, inherently so, since
 they're generated in time order), we can exploit this using bisection search to
 locate the beginning of the interesting subset.
 
-Due to the nature of bisection this is O(log N) where N is file size, with the
-limiting factor being the speed of a disk seek. Given a 1 terabyte file, 40
-seeks are required, resulting in an expected 600ms search time on a rusty old
-disk drive given ideal constraints.
+Due to the nature of bisection this is O(log N) with the limiting factor being
+the speed of a disk seek. Given a 1 terabyte file, 40 seeks are required,
+resulting in an expected 600ms search time on a rusty old disk drive given
+ideal constraints.
 
 Things look even better on an SSD where less than 1ms seeks are common, the
 same scenario could yield in excess of 25 lookups/second.
