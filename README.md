@@ -19,7 +19,7 @@ same scenario could yield in excess of 25 lookups/second.
 
 
 Interface
-^^^^^^^^^
+---------
 
 There are 4 main functions. In addition to what is described below, each
 function takes the following optional parameters:
@@ -65,7 +65,7 @@ And now the functions:
 
 
 Example
-^^^^^^^
+-------
 
     def parse_ts(s):
         """Parse a UNIX syslog format date out of s."""
@@ -81,7 +81,7 @@ Example
 
 
 Performance
-^^^^^^^^^^^
+-----------
 
 Tests using a 100gb file containing 1.07 billion 100 byte records. Immediateley
 after running ``/usr/bin/purge`` on my 2010 Macbook with a SAMSUNG HN-M500MBB,
