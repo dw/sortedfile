@@ -15,13 +15,6 @@
 # limitations under the License.
 #
 
-"""
-"Efficient" seeking within sorted text files. Works by implementing in-place
-binary search on the lines of the file, with some hacks to handle duplicate
-keys and the first line of the file. Can locate keys in a 1.6m line file in
-under 1ms.
-"""
-
 from __future__ import absolute_import
 
 import cStringIO as StringIO
