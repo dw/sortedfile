@@ -83,7 +83,7 @@ Example
 Performance
 -----------
 
-Tests using a 100gb file containing 1.07 billion 100 byte records. Immediatley
+Tests using a 100gb file containing 1.07 billion 100 byte records. Immediately
 after running ``/usr/bin/purge`` on my 2010 Macbook with a SAMSUNG HN-M500MBB,
 we get:
 
