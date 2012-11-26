@@ -1,3 +1,5 @@
+![Don't be like NoSQL Architect](http://i.imgur.com/hNNkn.jpg)
+
 sortedfile
 ==========
 
