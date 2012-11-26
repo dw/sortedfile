@@ -40,8 +40,8 @@ function takes the following optional parameters:
 
 ``hi``:
   Upper search bound in bytes. If the file being searched is weird (e.g. it's a
-  UNIX special device, or a file-like object), use the highest bound that can
-  be seeked.
+  UNIX special device, or a file-like object), specifies the highest bound that
+  can be seeked.
 
 And now the functions:
 
