@@ -28,7 +28,7 @@ function takes the following optional parameters:
   If specified, indicates a function (in the style of ``sorted(..., key=)``)
   that maps each line in the file to an ordered Python object, which will then
   be used for comparison. Provide a key function to extract, for example, the
-  unique ID or timestamp the lines in your files.
+  unique ID or timestamp from the lines in your files.
 
   If no key function is given, lines are compared lexicographically.
 
