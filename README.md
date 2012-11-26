@@ -1,4 +1,8 @@
-![Don't be like NoSQL Architect](http://i.imgur.com/hNNkn.jpg)
+
+<div style="text-align: center">
+<img title="Don't be like NoSQL Architect" src="http://i.imgur.com/hNNkn.jpg">
+</div>
+
 
 sortedfile
 ==========
