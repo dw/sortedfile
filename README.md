@@ -110,37 +110,37 @@ Tests using a 100gb file containing 1.07 billion 100 byte records. Immediately
 after running ``/usr/bin/purge`` on my 2010 Macbook with a SAMSUNG HN-M500MBB,
 we get:
 
-    [21:06:17 Eldil!29 sortedfile] python bigtest.py 
-    rec 909916882 len 1 in 193ms
-    rec 140582128 len 1 in 126ms
-    rec 893294258 len 1 in 125ms
-    rec 691277719 len 1 in 135ms
-    35 recs in 5.11s (avg 145ms 36 seeks 4ms/seek dist 24352mb / 6.85/sec)
+    sortedfile] python bigtest-cold.py 
+    46 recs in 5.08s (avg 110ms dist 31214mb / 9.05/sec)
 
 A little while later:
 
-    889 recs in 60.43s (avg 67ms 36 seeks 1ms/seek dist 35514mb / 14.71/sec)
+    770 recs in 60.44s (avg 78ms dist 33080mb / 12.74/sec)
 
 And the fixed record variant:
 
     sortedfile] python bigtest-fixed-cold.py 
-    76 recs in 5.04s (avg 66ms dist 30836mb / 15.09/sec)
-    157 recs in 10.08s (avg 64ms dist 29994mb / 15.58/sec)
+    85 recs in 5.01s (avg 58ms dist 33669mb / 16.96/sec)
+    172 recs in 10.04s (avg 58ms dist 34344mb / 17.13/sec)
     ...
-    1000 recs in 60.55s (avg 60ms dist 33768mb / 16.51/sec)
+    1160 recs in 60.28s (avg 51ms dist 35038mb / 19.24/sec)
 
-16 random reads per second on a 1 billion record data set, not bad for spinning
+19 random reads per second on a 1 billion record data set, not bad for spinning
 rust! ``bigtest-cold.py`` could be tweaked to more thoroughly dodge the various
 caches at work, but seems a realistic enough test as-is.
+
+Interestingly with a commodity hard drive, little caching and a single Python
+function, these numbers are already in the region of Google App Engine's read
+performance, and almost certainly with significantly better variance.
 
 
 Hot Performance
 ---------------
 
-``bigtest-warm.py`` implements a more interesting test. Instead of uniformly
-distributed load over the full set, readers are only interested in the most
-recent data. Without straying too far into kangaroo benchmark territory, it's
-fair to say this is a common case.
+``bigtest-warm.py`` is a more interesting test: instead of uniformly
+distributed load over the full set, readers are only interested in recent data.
+Without straying too far into kangaroo benchmark territory, it's fair to say
+this is a common case.
 
 Requests are randomly generated for the most recent 4% of the file (i.e. 4GB or
 43 million records), with an initial warming that pre-caches the range most
@@ -182,4 +182,4 @@ operation to remove the key would not overly hurt these numbers.
 There is an unfortunate limit: as ``mmap.mmap`` does not drop the GIL during a
 read, page faults are enough to hang a process attempting to serve clients
 using multiple threads. ``file`` does not have this problem, nor does forking a
-new process per client (or maintaining a process pool).
+new process per client, or maintaining a process pool.

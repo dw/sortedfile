@@ -32,7 +32,7 @@ ubound = 1073741823
 pick = lambda: random.randint(0, ubound)
 
 
-fp = file('/Users/dmw/big')
+fp = file('/Users/dmw/big', 'r', 100)
 
 start_time = time.time()
 count = 0
