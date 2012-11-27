@@ -25,18 +25,25 @@ See accompanying README.md for more information.
 import itertools
 import os
 
+try:
+    from mmap import mmap as _mmap
+except ImportError:
+    _mmap = None
 
-def _getsize(fp):
+
+def getsize(fp):
     """Return the size of `fp` if possible, otherwise raise ValueError."""
     if hasattr(fp, 'getvalue'):
         return len(fp.getvalue())
-    elif os.path.exists(fp.name):
+    elif _mmap and isinstance(fp, _mmap):
+        return len(fp)
+    elif hasattr(fp, 'name') and os.path.exists(fp.name):
         return os.path.getsize(fp.name)
     else:
         raise ValueError("can't get size of %r" % (fp,))
 
 
-def bisect_seek_left(fp, x, lo=None, hi=None, key=None, _stats=None):
+def bisect_seek_left(fp, x, lo=None, hi=None, key=None):
     """Position the sorted seekable file `fp` such that all preceding lines are
     less than `x`. If `x` is present, the file will be positioned on its first
     occurrence."""
@@ -45,7 +52,7 @@ def bisect_seek_left(fp, x, lo=None, hi=None, key=None, _stats=None):
     # skip the first read substring after a seek. Subtract one here to
     # counteract that.
     lo = (lo - 1) if lo else 0
-    hi = hi or _getsize(fp)
+    hi = hi or getsize(fp)
 
     count = 0
     while lo < hi:
@@ -59,9 +66,6 @@ def bisect_seek_left(fp, x, lo=None, hi=None, key=None, _stats=None):
         else:
             hi = mid
         count += 1
-
-    if _stats:
-        _stats[0] = count
 
     fp.seek(lo)
     if lo:
@@ -77,7 +81,7 @@ def bisect_seek_right(fp, x, lo=None, hi=None, key=None):
     # skip the first read substring after a seek. Subtract one here to
     # counteract that.
     lo = (lo - 1) if lo else 0
-    hi = hi or _getsize(fp)
+    hi = hi or getsize(fp)
 
     while lo < hi:
         mid = (lo + hi) // 2
@@ -95,13 +99,13 @@ def bisect_seek_right(fp, x, lo=None, hi=None, key=None):
         fp.readline()
 
 
-def iter_inclusive(fp, x, y, lo=None, hi=None, key=None, _stats=None):
+def iter_inclusive(fp, x, y, lo=None, hi=None, key=None):
     """Iterate lines of the sorted seekable file `fp` satisfying the condition
     `x <= line <= y`."""
     key = key or (lambda s: s)
-    bisect_seek_left(fp, x, lo, hi, key, _stats=_stats)
+    bisect_seek_left(fp, x, lo, hi, key)
     pred = lambda s: x <= key(s) <= y
-    return itertools.takewhile(pred, fp)
+    return itertools.takewhile(pred, iter(fp.readline, ''))
 
 
 def iter_exclusive(fp, x, y, lo=None, hi=None, key=None):
@@ -110,4 +114,4 @@ def iter_exclusive(fp, x, y, lo=None, hi=None, key=None):
     key = key or (lambda s: s)
     bisect_seek_right(fp, x, lo, hi, key)
     pred = lambda s: x < key(s) < y
-    return itertools.takewhile(pred, fp)
+    return itertools.takewhile(pred, iter(fp.readline, ''))
