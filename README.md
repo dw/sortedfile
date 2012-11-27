@@ -167,14 +167,14 @@ And the fixed variant:
     warm 0mb
     ...
     warm 4000mb
-    done cache warm in 9133 ms
-    56021 recs in 5.00s (avg 89us dist 0mb / 11202.13/sec)
-    113545 recs in 10.09s (avg 88us dist 0mb / 11252.82/sec)
+    done cache warm in 56333 ms
+    57496 recs in 5.01s (avg 87us dist 0mb / 11472.44/sec)
+    118194 recs in 10.00s (avg 84us dist 0mb / 11818.55/sec)
     ...
-    659331 recs in 55.00s (avg 83us dist 0mb / 11987.04/sec)
-    721057 recs in 60.00s (avg 83us dist 0mb / 12016.78/sec)
+    687029 recs in 55.00s (avg 80us dist 0mb / 12490.89/sec)
+    751375 recs in 60.01s (avg 79us dist 0mb / 12521.16/sec)
 
-Around 6000 random reads per second per core on 43 million hot records from a 1
+Around 6250 random reads per second per core on 43 million hot records from a 1
 billion record set, all using a plain text file as our "database" and a 23 line
 Python function as our engine! Granted it only parses an integer from the
 record, however even if the remainder of the record contained, say, JSON, a
