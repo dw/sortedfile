@@ -52,9 +52,9 @@ def bisect_seek_left(fp, x, lo=None, hi=None, key=None):
     """Position the sorted seekable file `fp` such that all preceding lines are
     less than `x`. If `x` is present, the file will be positioned on its first
     occurrence."""
-    key = key or (lambda s: s)
     lo = (lo - 1) if lo else 0
     hi = hi or getsize(fp)
+    key = key or (lambda s: s)
 
     while lo < hi:
         mid = (lo + hi) // 2
@@ -76,9 +76,9 @@ def bisect_seek_right(fp, x, lo=None, hi=None, key=None):
     """Position the sorted seekable file `fp` such that all subsequent lines
     are greater than `x`. If `x` is present, the file will be positioned past
     its last occurrence."""
-    key = key or (lambda s: s)
     lo = (lo - 1) if lo else 0
     hi = hi or getsize(fp)
+    key = key or (lambda s: s)
 
     while lo < hi:
         mid = (lo + hi) // 2
