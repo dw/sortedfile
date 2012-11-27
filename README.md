@@ -129,9 +129,9 @@ And the fixed record variant:
 rust! ``bigtest-cold.py`` could be tweaked to more thoroughly dodge the various
 caches at work, but seems a realistic enough test as-is.
 
-Interestingly with a commodity hard drive, little caching and a single Python
-function, these numbers are already in the region of Google App Engine's read
-performance, and almost certainly with significantly better variance.
+Interestingly with a budget laptop hard drive, little caching and a single
+Python function, these numbers are already in the region of Google App Engine's
+read performance, and almost certainly with significantly better variance.
 
 
 Hot Performance
