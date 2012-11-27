@@ -174,11 +174,12 @@ And the fixed variant:
     659331 recs in 55.00s (avg 83us dist 0mb / 11987.04/sec)
     721057 recs in 60.00s (avg 83us dist 0mb / 12016.78/sec)
 
-Around 6000 random reads per second per core on a 43 million record data set,
-all using a plain text file as our "database" and a 23 line Python function as
-our engine! Granted it only parses an integer from the record, however even if
-the remainder of the record contained, say, JSON, a single string split
-operation to remove the key would not overly hurt these numbers.
+Around 6000 random reads per second per core on 43 million hot records from a 1
+billion record set, all using a plain text file as our "database" and a 23 line
+Python function as our engine! Granted it only parses an integer from the
+record, however even if the remainder of the record contained, say, JSON, a
+single string split operation to remove the key would not overly hurt these
+numbers.
 
 There is an unfortunate limit: as ``mmap.mmap`` does not drop the GIL during a
 read, page faults are enough to hang a process attempting to serve clients
