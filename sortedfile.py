@@ -27,6 +27,7 @@ See accompanying README.md for more information.
 # we subtract one from `lo` if it is provided to the bisect() functions to
 # ensure the user's full intended line is seen.
 
+import functools
 import itertools
 import os
 
@@ -50,7 +51,7 @@ def getsize(fp):
 
 def bisect_seek_left(fp, x, lo=None, hi=None, key=None):
     """Position the sorted seekable file `fp` such that all preceding lines are
-    less than `x`. If `x` is present, the file will be positioned on its first
+    less than `x`. If `x` is present, the file is positioned on its first
     occurrence."""
     lo = (lo - 1) if lo else 0
     hi = hi or getsize(fp)
@@ -74,8 +75,8 @@ def bisect_seek_left(fp, x, lo=None, hi=None, key=None):
 
 def bisect_seek_right(fp, x, lo=None, hi=None, key=None):
     """Position the sorted seekable file `fp` such that all subsequent lines
-    are greater than `x`. If `x` is present, the file will be positioned past
-    its last occurrence."""
+    are greater than `x`. If `x` is present, the file is positioned past its
+    last occurrence."""
     lo = (lo - 1) if lo else 0
     hi = hi or getsize(fp)
     key = key or (lambda s: s)
@@ -96,6 +97,48 @@ def bisect_seek_right(fp, x, lo=None, hi=None, key=None):
         fp.readline()
 
 
+def bisect_seek_fixed_left(fp, n, x, lo=None, hi=None, key=None):
+    """Position the sorted seekable file `fp` such that all preceding `n` byte
+    records are less than `x`. If `x` is present, the file is positioned on its
+    first occurrence."""
+    lo = lo or 0
+    key = key or (lambda s: s)
+    rlo = lo / n
+    rhi = (hi or getsize(fp)) / n
+
+    while rlo < rhi:
+        mid = (rlo + rhi) // 2
+        fp.seek(lo + (mid * n))
+        s = fp.read(n)
+        if s and key(s) < x:
+            rlo = mid + 1
+        else:
+            rhi = mid
+
+    fp.seek(lo + (rlo * n))
+
+
+def bisect_seek_fixed_right(fp, n, x, lo=None, hi=None, key=None):
+    """Position the sorted seekable file `fp` such that all subsequent `n` byte
+    records are greater than `x`. If `x` is present, the file is positioned
+    past its last occurrence."""
+    lo = lo or 0
+    key = key or (lambda s: s)
+    rlo = lo / n
+    rhi = (hi or getsize(fp)) / n
+
+    while rlo < rhi:
+        mid = (rlo + rhi) // 2
+        fp.seek(lo + (mid * n))
+        s = fp.read(n)
+        if s and x < key(s):
+            rhi = mid
+        else:
+            rlo = mid + 1
+
+    fp.seek(lo + (rlo * n))
+
+
 def iter_inclusive(fp, x, y, lo=None, hi=None, key=None):
     """Iterate lines of the sorted seekable file `fp` satisfying the condition
     `x <= line <= y`."""
@@ -112,3 +155,21 @@ def iter_exclusive(fp, x, y, lo=None, hi=None, key=None):
     bisect_seek_right(fp, x, lo, hi, key)
     pred = lambda s: x < key(s) < y
     return itertools.takewhile(pred, iter(fp.readline, ''))
+
+
+def iter_fixed_inclusive(fp, n, x, y, lo=None, hi=None, key=None):
+    """Iterate `n` byte records of the sorted seekable file `fp` satisfying the
+    condition `x <= record <= y`."""
+    key = key or (lambda s: s)
+    bisect_seek_fixed_left(fp, n, x, lo, hi, key)
+    pred = lambda s: x <= key(s) <= y
+    return itertools.takewhile(pred, iter(functools.partial(fp.read, n), ''))
+
+
+def iter_fixed_exclusive(fp, n, x, y, lo=None, hi=None, key=None):
+    """Iterate `n` byte records of the sorted seekable file `fp` satisfying the
+    condition `x < record < y`."""
+    key = key or (lambda s: s)
+    bisect_seek_fixed_right(fp, n, x, lo, hi, key)
+    pred = lambda s: x < key(s) < y
+    return itertools.takewhile(pred, iter(functools.partial(fp.read, n), ''))
