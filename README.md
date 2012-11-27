@@ -46,8 +46,8 @@ function takes the following optional parameters:
 
 ``hi``:
   Upper search bound in bytes. If the file being searched is weird (e.g. it's a
-  UNIX special device, or a file-like object), specifies the highest bound that
-  can be seeked.
+  UNIX special device, or a file-like object or ``mmap.mmap``), specifies the
+  highest bound that can be seeked.
 
 And now the functions:
 
@@ -74,8 +74,8 @@ Example
 -------
 
     def parse_ts(s):
-        """Parse a UNIX syslog format date out of s."""
-        time.strptime(' '.join(s.split()[:3]), '%b %d %H:%M:%S')
+        """Parse a UNIX syslog format date out of `s`."""
+        return time.strptime(' '.join(s.split()[:3]), '%b %d %H:%M:%S')
 
     fp = file('/var/log/messages')
     # Copy a time range from syslog to stdout.
@@ -86,8 +86,8 @@ Example
     sys.stdout.writelines(it)
 
 
-Performance
------------
+Cold Performance
+----------------
 
 Tests using a 100gb file containing 1.07 billion 100 byte records. Immediately
 after running ``/usr/bin/purge`` on my 2010 Macbook with a SAMSUNG HN-M500MBB,
@@ -106,3 +106,33 @@ A little while later:
 
 Not bad for spinning rust! ``bigtest.py`` could be tweaked to more thoroughly
 dodge the various caches at work, but seems a realistic enough test as-is.
+
+
+Hot Performance
+---------------
+
+``bigtest-warm.py`` implements a more interesting test. Instead of uniformly
+distributed load over the full set, readers are only interested in the most
+recent data. Without straying into kangaroo benchmark territory, it's fair to
+say this is a common case.
+
+Requests are randomly generated for the most recent 4% of the file (i.e. 4GB or
+43 million records), with an initial warming that pre-caches the range most
+reads are serviced by. ``mmap.mmap`` is used in place of the Python ``file`` as
+it favourably influences OS X's random IO caching behaviour.
+
+After warmup it ``fork()``s twice to make use of both cores.
+
+    sortedfile] python bigtest-warm.py 
+    warm 0mb
+    warm 1000mb
+    warm 2000mb
+    warm 3000mb
+    warm 4000mb
+    done cache warm in 9211 ms
+    45346 recs in 5.00s (avg 110us dist 0mb / 9067.53/sec)
+    91917 recs in 10.00s (avg 108us dist 0mb / 9190.33/sec)
+    ...
+    528244 recs in 55.00s (avg 104us dist 0mb / 9603.75/sec)
+    577429 recs in 60.00s (avg 103us dist 0mb / 9623.08/sec)
+

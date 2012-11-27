@@ -45,27 +45,22 @@ last = None
 while True:
     record = pick()
     t0  = time.time()
-    st = [0]
-    lst = map(int, sortedfile.iter_inclusive(fp, record, record, key=int,
-        _stats=st))
+    lst = map(int, sortedfile.iter_inclusive(fp, record, record, key=int))
     t1 = time.time()
-    total_seeks += st[0]
     if last is None:
         dist = 0
     else:
         dist = abs(record - last)
         total_distance += dist
-    if not (count % 10):
+    if 0 and not (count % 50):
         print 'rec %d len %d in %dms' % (record, len(lst), 1000*(t1-t0))
     count += 1
     assert lst == [record]
     if (last_stats + 5) < time.time():
         last_stats = time.time()
-        print '%d recs in %.2fs (avg %dms %d seeks %dms/seek dist %dmb / %.2f/sec)' %\
+        print '%d recs in %.2fs (avg %dms dist %dmb / %.2f/sec)' %\
             (count, last_stats - start_time,
              (1000 * (last_stats - start_time)) / count,
-             total_seeks / count,
-             (1000 * (last_stats - start_time)) / total_seeks,
              (100 * (total_distance / count)) / 1048576.,
              1000 / ((1000 * (last_stats - start_time)) / count))
     last = record
