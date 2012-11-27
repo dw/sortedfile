@@ -16,8 +16,8 @@
 #
 
 """
-Like bigtest.py, but use mmap and assume lower 2% of the dataset is hot (21
-million recs / 2gb).
+Like bigtest.py, but use mmap and assume lower 4% of the dataset is hot (42.9
+million recs / 4gb).
 """
 
 import os

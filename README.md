@@ -129,10 +129,10 @@ After warmup it ``fork()``s twice to make use of both cores.
     warm 2000mb
     warm 3000mb
     warm 4000mb
-    done cache warm in 9211 ms
-    45346 recs in 5.00s (avg 110us dist 0mb / 9067.53/sec)
-    91917 recs in 10.00s (avg 108us dist 0mb / 9190.33/sec)
+    done cache warm in 9159 ms
+    48979 recs in 5.00s (avg 102us dist 0mb / 9793.93/sec)
+    99043 recs in 10.00s (avg 100us dist 0mb / 9902.86/sec)
     ...
-    528244 recs in 55.00s (avg 104us dist 0mb / 9603.75/sec)
-    577429 recs in 60.00s (avg 103us dist 0mb / 9623.08/sec)
+    558801 recs in 55.02s (avg 98us dist 0mb / 10156.87/sec)
+    611674 recs in 60.00s (avg 98us dist 0mb / 10194.00/sec)
 

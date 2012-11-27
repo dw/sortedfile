@@ -22,6 +22,11 @@ line of the file.
 See accompanying README.md for more information.
 """
 
+# If user specifies the exact start of a line using the `lo` parameter, due to
+# logic below we always skip the first read substring after a seek. Therefore
+# we subtract one from `lo` if it is provided to the bisect() functions to
+# ensure the user's full intended line is seen.
+
 import itertools
 import os
 
@@ -48,13 +53,9 @@ def bisect_seek_left(fp, x, lo=None, hi=None, key=None):
     less than `x`. If `x` is present, the file will be positioned on its first
     occurrence."""
     key = key or (lambda s: s)
-    # If user specifies the exact start of a line, due to logic below we always
-    # skip the first read substring after a seek. Subtract one here to
-    # counteract that.
     lo = (lo - 1) if lo else 0
     hi = hi or getsize(fp)
 
-    count = 0
     while lo < hi:
         mid = (lo + hi) // 2
         fp.seek(mid)
@@ -65,7 +66,6 @@ def bisect_seek_left(fp, x, lo=None, hi=None, key=None):
             lo = mid + 1
         else:
             hi = mid
-        count += 1
 
     fp.seek(lo)
     if lo:
@@ -77,9 +77,6 @@ def bisect_seek_right(fp, x, lo=None, hi=None, key=None):
     are greater than `x`. If `x` is present, the file will be positioned past
     its last occurrence."""
     key = key or (lambda s: s)
-    # If user specifies the exact start of a line, due to logic below we always
-    # skip the first read substring after a seek. Subtract one here to
-    # counteract that.
     lo = (lo - 1) if lo else 0
     hi = hi or getsize(fp)
 
