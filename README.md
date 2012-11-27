@@ -17,7 +17,7 @@ locate the beginning of the interesting subset.
 
 Due to the nature of bisection this is O(log N) with the limiting factor being
 the speed of a disk seek. Given a 1 terabyte file, 40 seeks are required,
-resulting in an expected 600ms search time on a rusty old disk drive given
+resulting in an *expected* 600ms search time on a rusty old disk drive given
 pessimistic constraints.
 
 Things look even better on an SSD where less than 1ms seeks are common, the
