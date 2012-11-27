@@ -131,7 +131,8 @@ caches at work, but seems a realistic enough test as-is.
 
 Interestingly with a budget laptop hard drive, little caching and a single
 Python function, these numbers are already in the region of Google App Engine's
-read performance, and almost certainly with significantly better variance.
+read performance, almost certainly exhibits significantly better variance, and
+the management tools (vim/head/tail/grep/cut/paste!) blow the competition away.
 
 
 Hot Performance
