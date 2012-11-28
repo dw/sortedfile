@@ -217,3 +217,26 @@ the file and the target workload. For random reads of single records, a buffer
 size that approximates the average record length will work better, whereas for
 quick seeks followed by long sequential reads, a larger size is probably
 better.
+
+
+Interesting uses
+################
+
+Since the ``bisect`` functions re-check the input file's size on each call, it
+is trivial to have concurrent readers and writers, so long as writers take care
+to open the file as ``O_APPEND``, and emit records no larger than the maximum
+atomic write size for the given operating system. On Linux, since ``write()``
+holds a lock, it should be possible to write records of arbitrary size.
+
+However since each region's midpoint will change while the file grows, this
+mode may not interact well with OS caching without further mitigations.
+
+
+Room for improvement
+####################
+
+It should be possible to squeeze better performance out of the ``file`` case by
+paying more attention to the operating system's needs, in particular with
+regard to read alignment, and the use of ``posix_fadvise``. The ``file``
+performance above is significantly worse than ``mmap.mmap``, this is almost
+certainly not inherent, and more likely due to a badly designed test.
