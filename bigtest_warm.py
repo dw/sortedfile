@@ -16,8 +16,7 @@
 #
 
 """
-Like bigtest.py, but use mmap and assume lower 4% of the dataset is hot (42.9
-million recs / 4gb).
+Requires generation of a test file via bigtest_mkbig.py before running.
 """
 
 import os
@@ -25,21 +24,19 @@ import mmap
 import random
 import time
 
-import numpy
+import struct
 import sortedfile
+from bigtest_mkbig import *
 
-ubound = 1073741823
 lbound = int(ubound - (ubound * .04))
 
-# hot = numpy.random.randint(lbound, ubound, size=ubound-lbound)
-
-fp = file('/Users/dmw/big')
+fp = file(filename)
 hi = sortedfile.getsize(fp)
 mem = mmap.mmap(fp.fileno(), hi, mmap.MAP_SHARED, mmap.ACCESS_READ)
 
 
 t0 = time.time()
-mem.seek(lbound * 100)
+mem.seek(lbound * reclen)
 for i, _ in enumerate(iter(lambda: mem.read(10485760), '')):
     if not i % 100:
         print 'warm %dmb' % (i * 10)
@@ -61,7 +58,7 @@ rfp = os.fdopen(rfd, 'r', 8)
 monitor = bool(os.fork())
 if monitor:
     while True:
-        count = numpy.fromstring(rfp.read(8), dtype='int32').sum()
+        count = sum(struct.unpack('=LL', rfp.read(8)))
         last_stats = time.time()
         print '%d recs in %.2fs (avg %dus dist %dmb / %.2f/sec)' %\
             (count, last_stats - start_time,
@@ -71,16 +68,16 @@ if monitor:
 
 node = 0 if os.fork() else 1
 
-last = numpy.random.randint(lbound, ubound)
+last = random.randint(lbound, ubound)
 
 while True:
-    record = numpy.random.randint(lbound, ubound)
-    lst = map(int, sortedfile.iter_fixed_inclusive(mem, 100, record, record,
-        hi=hi, key=int))
+    record = random.randint(lbound, ubound)
+    lst = map(int, sortedfile.iter_inclusive(mem, record, record, hi=hi,
+        key=int))
     assert lst == [record]
     total_distance += abs(record - last)
     count += 1
     if (last_stats + 5) < time.time():
-        os.write(wfd, numpy.array([count], dtype='int32'))
+        os.write(wfd, struct.pack('=L', count))
         last_stats = time.time()
     last = record

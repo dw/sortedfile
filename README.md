@@ -4,8 +4,7 @@
 </div>
 
 
-sortedfile
-==========
+## sortedfile
 
 When handling very large text files (for example, Apache logs), it is often
 desirable to quickly access some subset without first splitting or import to a
@@ -22,8 +21,7 @@ pessimistic constraints. Things look better on an SSD where less than 1ms seeks
 are common, the same scenario could yield in excess of 25 lookups/second.
 
 
-Interface
----------
+### Interface
 
 There are 6 functions provided for dealing with variable length lines, or
 fixed-length records. In addition to what is described below, each function
@@ -87,8 +85,7 @@ And now the functions:
   condition ``x < record < y``.
 
 
-Example
--------
+### Example
 
     def parse_ts(s):
         """Parse a UNIX syslog format date out of `s`."""
@@ -103,14 +100,13 @@ Example
     sys.stdout.writelines(it)
 
 
-Cold Performance
-----------------
+### Cold Performance
 
 Tests using a 100gb file containing 1.07 billion 100 byte records. Immediately
 after running ``/usr/bin/purge`` on my 2010 Macbook with a SAMSUNG HN-M500MBB,
 we get:
 
-    sortedfile] python bigtest-cold.py 
+    sortedfile] python bigtest_cold.py 
     46 recs in 5.08s (avg 110ms dist 31214mb / 9.05/sec)
 
 A little while later:
@@ -119,14 +115,14 @@ A little while later:
 
 And the fixed record variant:
 
-    sortedfile] python bigtest-fixed-cold.py 
+    sortedfile] python bigtest_fixed_cold.py 
     85 recs in 5.01s (avg 58ms dist 33669mb / 16.96/sec)
     172 recs in 10.04s (avg 58ms dist 34344mb / 17.13/sec)
     ...
     1160 recs in 60.28s (avg 51ms dist 35038mb / 19.24/sec)
 
 19 random reads per second on a 1 billion record data set, not bad for spinning
-rust! ``bigtest-cold.py`` could be tweaked to more thoroughly dodge the various
+rust! ``bigtest_cold.py`` could be tweaked to more thoroughly dodge the various
 caches at work, but seems a realistic enough test as-is.
 
 Interestingly with a budget laptop hard drive, little caching and a single
@@ -135,10 +131,9 @@ read performance, almost certainly exhibits significantly better variance, and
 the management tools (vim/head/tail/grep/cut/paste!) blow the competition away.
 
 
-Hot Performance
----------------
+### Hot Performance
 
-``bigtest-warm.py`` is a more interesting test: instead of uniformly
+``bigtest_warm.py`` is a more interesting test: instead of uniformly
 distributed load over the full set, readers are only interested in recent data.
 Without straying too far into kangaroo benchmark territory, it's fair to say
 this is a common case.
@@ -150,7 +145,7 @@ favourably influences OS X's caching behaviour.
 
 After warmup it ``fork()``s twice to make use of both cores.
 
-    sortedfile] python bigtest-warm.py 
+    sortedfile] python bigtest_warm.py 
     warm 0mb
     ...
     warm 4000mb
@@ -163,7 +158,7 @@ After warmup it ``fork()``s twice to make use of both cores.
 
 And the fixed variant:
 
-    ] python bigtest-fixed-warm.py 
+    sortedfile] python bigtest_fixed_warm.py 
     warm 0mb
     ...
     warm 4000mb
@@ -185,3 +180,15 @@ There is an unfortunate limit: as ``mmap.mmap`` does not drop the GIL during a
 read, page faults are enough to hang a process attempting to serve clients
 using multiple threads. ``file`` does not have this problem, nor does forking a
 new process per client, or maintaining a process pool.
+
+
+### A note on buffering
+
+When using ``file``, performance may vary according to the buffer size set for
+the file and the target workload. For random reads of single records, a buffer
+size that approximates the average record length will work better, whereas for
+quick seeks followed by long sequential reads, a larger size is preferable.
+
+Although untested a combination may also work, where one file is used for
+searching while another is used for sequential reads (using e.g.
+``seq_fp.seek(search_fp.tell())``)

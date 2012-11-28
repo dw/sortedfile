@@ -16,23 +16,17 @@
 #
 
 """
-Requires generation of a 100gb test file before running:
-
-    f = file('/Users/dmw/big', 'w', 10 * 1048576)
-    for i in xrange(1073741824):
-        f.write('%-99d\n' % i)
+Requires generation of a test file via bigtest_mkbig.py before running.
 """
 
 import random
 import time
 
 import sortedfile
-
-ubound = 1073741823
-pick = lambda: random.randint(0, ubound)
+from bigtest_mkbig import *
 
 
-fp = file('/Users/dmw/big', 'r', 100)
+fp = file(filename, 'r', reclen)
 
 start_time = time.time()
 count = 0
@@ -43,9 +37,9 @@ last_stats = time.time()
 last = None
 
 while True:
-    record = pick()
+    record = random.randint(0, ubound)
     t0  = time.time()
-    lst = map(int, sortedfile.iter_fixed_inclusive(fp, 100, record, record,
+    lst = map(int, sortedfile.iter_fixed_inclusive(fp, reclen, record, record,
         key=int))
     t1 = time.time()
     if last is None:
