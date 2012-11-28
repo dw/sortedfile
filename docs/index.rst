@@ -222,14 +222,15 @@ better.
 Interesting uses
 ################
 
-Since the ``bisect`` functions re-check the input file's size on each call, it
-is trivial to have concurrent readers and writers, so long as writers take care
-to open the file as ``O_APPEND``, and emit records no larger than the maximum
-atomic write size for the given operating system. On Linux, since ``write()``
-holds a lock, it should be possible to write records of arbitrary size.
+Since the ``bisect`` functions re-check the input file's size on each call when
+``hi`` isn't specified, it is trivial to have concurrent readers and writers,
+so long as writers take care to open the file as ``O_APPEND``, and emit records
+no larger than the maximum atomic write size for the given operating system. On
+Linux, since ``write()`` holds a lock, it should be possible to write records
+of arbitrary size.
 
 However since each region's midpoint will change while the file grows, this
-mode may not interact well with OS caching without further mitigations.
+mode may not interact well with OS caching without further mitigation.
 
 
 Room for improvement
