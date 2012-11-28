@@ -2,6 +2,8 @@
 sortedfile
 ==========
 
+`http://github.com/dw/sortedfile <http://github.com/dw/sortedfile>`_
+
 .. toctree::
     :hidden:
     :maxdepth: 2
