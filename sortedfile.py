@@ -19,7 +19,8 @@ Efficient seeking within sorted text files. Works by implementing in-place
 binary search on the lines of the file, with a small hack to handle the first
 line of the file.
 
-See accompanying README.md for more information.
+See accompanying documentation for more information.
+http://sortedfile.readthedocs.org/
 """
 
 # If user specifies the exact start of a line using the `lo` parameter, due to
