@@ -134,6 +134,13 @@ And the fixed record variant:
 rust! ``bigtest.py`` could be tweaked to more thoroughly dodge the various
 caches at work, but seems a realistic enough test as-is.
 
+Reading the 100 consecutive records following each search provides some
+indication of throughput in a common use case:
+
+    sortedfile] python bigtest.py fixed span100
+    ...
+    101303 recs in 60.40s (avg 0.596ms / 1677.13/sec)
+
 
 ### Hot Performance
 
@@ -180,6 +187,12 @@ record, however even if the remainder of the record contained, say, JSON, a
 single string split operation to remove the key would not overly hurt these
 numbers.
 
+And for the consecutive sequential read case:
+
+    sortedfile] python bigtest.py fixed mmap smp warm span100
+    ...
+    15396036 recs in 60.01s (avg 0.004ms / 256578.04/sec)
+
 There is an unfortunate limit: as ``mmap.mmap`` does not drop the GIL during a
 read, page faults are enough to hang a process attempting to serve clients
 using multiple threads. ``file`` does not have this problem, nor does forking a
@@ -191,8 +204,5 @@ new process per client, or maintaining a process pool.
 When using ``file``, performance may vary according to the buffer size set for
 the file and the target workload. For random reads of single records, a buffer
 size that approximates the average record length will work better, whereas for
-quick seeks followed by long sequential reads, a larger size is preferable.
-
-Although untested a combination may also work, where one file is used for
-searching while another is used for sequential reads (using e.g.
-``seq_fp.seek(search_fp.tell())``)
+quick seeks followed by long sequential reads, a larger size is probably
+better.

@@ -70,12 +70,15 @@ if 'warm' in sys.argv:
             print 'warm %dmb' % (i * 10)
     print 'done cache warm in %dms' % (1000 * (time.time() - t0))
 
+if 'span100' in sys.argv:
+    span = 100
+else:
+    span = 0
 
 start_time = time.time()
 count = 0
 total_distance = 0
 last_stats = time.time()
-last = random.randint(lbound, ubound)
 
 nodes = 2 if 'smp' in sys.argv else 1
 rfd, wfd = os.pipe()
@@ -85,10 +88,9 @@ monitor = bool(os.fork())
 while monitor:
     count = sum(struct.unpack('=' + ('L'*nodes), rfp.read(4 * nodes)))
     last_stats = time.time()
-    print '%d recs in %.2fs (avg %.3fms dist %dmb / %.2f/sec)' %\
+    print '%d recs in %.2fs (avg %.3fms / %.2f/sec)' %\
         (count, last_stats - start_time,
          (1000 * (last_stats - start_time)) / count,
-         (100 * (total_distance / count)) / 1048576.,
          1000 / ((1000 * (last_stats - start_time)) / count))
 
 for _ in range(nodes - 1):
@@ -96,10 +98,10 @@ for _ in range(nodes - 1):
 
 while True:
     record = random.randint(lbound, ubound)
-    lst = map(int, do_iter(record, record))
-    total_distance += abs(record - last)
-    count += 1
-    assert lst == [record], repr((lst, record))
+    lst = map(int, do_iter(record, record+span))
+    count += len(lst)
+    expect = range(record, min(ubound, record+span) + 1)
+    assert lst == expect, repr((lst, record))
     if (last_stats + 5) < time.time():
         os.write(wfd, struct.pack('=L', count))
         last_stats = time.time()
