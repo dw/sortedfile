@@ -1,6 +1,6 @@
 
 <div style="text-align: center">
-<img title="Don't be like NoSQL Architect" src="http://i.imgur.com/hNNkn.jpg">
+<img title="Don't be like NoSQL Architect" src="http://i.imgur.com/NdQHm.jpg">
 </div>
 
 
