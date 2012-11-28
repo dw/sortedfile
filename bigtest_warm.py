@@ -19,16 +19,18 @@
 Requires generation of a test file via bigtest_mkbig.py before running.
 """
 
-import os
+import functools
 import mmap
+import os
 import random
+import sys
 import time
 
 import struct
 import sortedfile
 from bigtest_mkbig import *
 
-lbound = int(ubound - (ubound * .04))
+lbound = int(ubound - (ubound * .01))
 
 fp = file(filename)
 hi = sortedfile.getsize(fp)
@@ -56,24 +58,29 @@ rfd, wfd = os.pipe()
 rfp = os.fdopen(rfd, 'r', 8)
 
 monitor = bool(os.fork())
-if monitor:
-    while True:
-        count = sum(struct.unpack('=LL', rfp.read(8)))
-        last_stats = time.time()
-        print '%d recs in %.2fs (avg %dus dist %dmb / %.2f/sec)' %\
-            (count, last_stats - start_time,
-             (1000000 * (last_stats - start_time)) / count,
-             (100 * (total_distance / count)) / 1048576.,
-             1000 / ((1000 * (last_stats - start_time)) / count))
+while monitor:
+    count = sum(struct.unpack('=LL', rfp.read(8)))
+    last_stats = time.time()
+    print '%d recs in %.2fs (avg %dus dist %dmb / %.2f/sec)' %\
+        (count, last_stats - start_time,
+         (1000000 * (last_stats - start_time)) / count,
+         (100 * (total_distance / count)) / 1048576.,
+         1000 / ((1000 * (last_stats - start_time)) / count))
 
-node = 0 if os.fork() else 1
+if 'fixed' in sys.argv:
+    print 'using fixed'
+    do_iter = functools.partial(sortedfile.iter_fixed_inclusive,
+        mem, reclen, hi=hi, key=int)
+else:
+    do_iter = functools.partial(sortedfile.iter_inclusive,
+        mem, hi=hi, key=int)
 
 last = random.randint(lbound, ubound)
+os.fork()
 
 while True:
     record = random.randint(lbound, ubound)
-    lst = map(int, sortedfile.iter_inclusive(mem, record, record, hi=hi,
-        key=int))
+    lst = map(int, do_iter(record, record))
     assert lst == [record]
     total_distance += abs(record - last)
     count += 1

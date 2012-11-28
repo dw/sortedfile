@@ -19,7 +19,9 @@
 Requires generation of a test file via bigtest_mkbig.py before running.
 """
 
+import functools
 import random
+import sys
 import time
 
 import sortedfile
@@ -36,10 +38,18 @@ last_stats = time.time()
 
 last = None
 
+if 'fixed' in sys.argv:
+    print 'using fixed'
+    do_iter = functools.partial(sortedfile.iter_fixed_inclusive,
+        fp, reclen, key=int)
+else:
+    do_iter = functools.partial(sortedfile.iter_inclusive,
+        fp, key=int)
+
 while True:
     record = random.randint(0, ubound)
     t0  = time.time()
-    lst = map(int, sortedfile.iter_inclusive(fp, record, record, key=int))
+    lst = map(int, do_iter(record, record))
     t1 = time.time()
     if last is None:
         dist = 0
