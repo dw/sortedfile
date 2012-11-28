@@ -139,6 +139,33 @@ def bisect_seek_fixed_right(fp, n, x, lo=None, hi=None, key=None):
     fp.seek(lo + (rlo * n))
 
 
+def extents(fp, lo=None, hi=None):
+    """Return a tuple of the lowest and highest lines from the seekable
+    file `fp`."""
+    lo = (lo - 1) if lo else 0
+    hi = hi or getsize(fp)
+    bisect_seek_left(fp, '', lo, hi)
+    low = fp.readline()
+
+    for offset in xrange(0, 1048576, 4096):
+        fp.seek(hi - offset)
+        _, sep, high = fp.read(offset - 1).rstrip('\n').rpartition('\n')
+        if sep:
+            return low, high
+
+
+def extents_fixed(fp, n, lo=None, hi=None):
+    """Return a tuple of the lowest and highest `n` byte records from the
+    seekable file `fp`."""
+    lo = lo or 0
+    hi = hi or getsize(fp)
+    bisect_seek_fixed_left(fp, n, '', lo, hi)
+    low = fp.read(n)
+    recs = (hi - lo) / n
+    fp.seek(lo + (n * (recs - 1)))
+    return low, fp.read(n)
+
+
 def iter_inclusive(fp, x, y, lo=None, hi=None, key=None):
     """Iterate lines of the sorted seekable file `fp` satisfying the condition
     `x <= line <= y`."""

@@ -23,9 +23,9 @@ are common, the same scenario could yield in excess of 25 lookups/second.
 
 ### Interface
 
-There are 6 functions provided for dealing with variable length lines, or
-fixed-length records. In addition to what is described below, each function
-takes the following optional parameters:
+There are 4 functions provided in two variants, one for variable length lines
+and one for fixed-length records. In addition to what is described below, each
+function takes the following optional parameters:
 
 ``key``:
   If specified, indicates a function (in the style of ``sorted(..., key=)``)
@@ -37,9 +37,9 @@ takes the following optional parameters:
 
 ``lo``:
   Lower search bound in bytes. Use this to skip e.g. undesirable header lines,
-  or to constrain a search using a previously successful search. Search will
-  actually include one byte prior to this offset, in order to guarantee the
-  function has seen a complete line.
+  or to constrain a search using a previously successful search. For line
+  oriented files, search will actually include one byte prior to this offset
+  in order to guarantee a complete line is seen.
 
 ``hi``:
   Upper search bound in bytes. If the file being searched is weird (e.g. it's a
@@ -67,6 +67,14 @@ And now the functions:
   Position the sorted seekable file ``fp`` such that all subsequent ``n`` byte
   records are greater than ``x``. If ``x`` is present, the file is positioned
   past its last occurrence.
+
+``extents(fp, lo=None, hi=None)``:
+    Return a tuple of the lowest and highest lines from the seekable file
+    ``fp``.
+
+``extents_fixed(fp, n, lo=None, hi=None)``:
+    Return a tuple of the lowest and highest `n` byte records from the seekable
+    file `fp`.
 
 ``iter_inclusive(fp, x, y, lo=None, hi=None, key=None)``:
   Iterate lines of the sorted seekable file ``fp`` satisfying the condition

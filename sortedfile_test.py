@@ -99,6 +99,12 @@ class BisectTestCase(unittest.TestCase):
         io = StringIO.StringIO('')
         test(0, 0)
 
+    def test_extents(self):
+        io = self.make_fp()
+        low, high = sortedfile.extents(io)
+        self.assertEqual(1, int(low))
+        self.assertEqual(9, int(high))
+
     def test_iter_inclusive(self):
         io = self.make_fp()
         self.assertEqual([1]*10 + [2]*10, map(int,
@@ -156,6 +162,12 @@ class BisectFixedTestCase(unittest.TestCase):
         test(len(io.getvalue()), 11)
         io = StringIO.StringIO('')
         test(0, 0)
+
+    def test_extents_fixed(self):
+        io = self.make_fp()
+        low, high = sortedfile.extents_fixed(io, 100)
+        self.assertEqual(1, int(low))
+        self.assertEqual(9, int(high))
 
     def test_iter_inclusive(self):
         io = self.make_fp()
