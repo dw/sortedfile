@@ -115,7 +115,7 @@ Tests using a 100gb file containing 1.07 billion 100 byte records. Immediately
 after running ``/usr/bin/purge`` on my 2010 Macbook with a SAMSUNG HN-M500MBB,
 we get:
 
-    sortedfile] python bigtest_cold.py 
+    sortedfile] python bigtest.py 
     46 recs in 5.08s (avg 110ms dist 31214mb / 9.05/sec)
 
 A little while later:
@@ -124,20 +124,20 @@ A little while later:
 
 And the fixed record variant:
 
-    sortedfile] python bigtest_fixed_cold.py 
+    sortedfile] python bigtest.py fixed
     85 recs in 5.01s (avg 58ms dist 33669mb / 16.96/sec)
     172 recs in 10.04s (avg 58ms dist 34344mb / 17.13/sec)
     ...
     1160 recs in 60.28s (avg 51ms dist 35038mb / 19.24/sec)
 
 19 random reads per second on a 1 billion record data set, not bad for spinning
-rust! ``bigtest_cold.py`` could be tweaked to more thoroughly dodge the various
+rust! ``bigtest.py`` could be tweaked to more thoroughly dodge the various
 caches at work, but seems a realistic enough test as-is.
 
 
 ### Hot Performance
 
-``bigtest_warm.py`` is a more interesting test: instead of uniformly
+``bigtest.py warm`` is a more interesting test: instead of uniformly
 distributed load over the full set, readers are only interested in recent data.
 Without straying too far into kangaroo benchmark territory, it's fair to say
 this is a common case.
@@ -149,7 +149,7 @@ significant performance benefits when disk IO is fast (i.e. cached).
 
 After warmup it ``fork()``s twice to make use of both cores.
 
-    sortedfile] python bigtest_warm.py 
+    sortedfile] python bigtest.py warm mmap smp
     warm 0mb
     ...
     warm 4000mb
@@ -162,7 +162,7 @@ After warmup it ``fork()``s twice to make use of both cores.
 
 And the fixed variant:
 
-    sortedfile] python bigtest_fixed_warm.py 
+    sortedfile] python bigtest.py fixed warm mmap smp
     warm 0mb
     ...
     warm 4000mb
