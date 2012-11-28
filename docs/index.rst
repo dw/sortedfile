@@ -81,6 +81,7 @@ Utility Functions
 
 .. autofunction:: sortedfile.extents
 .. autofunction:: sortedfile.extents_fixed
+.. autofunction:: sortedfile.getsize
 
 
 
