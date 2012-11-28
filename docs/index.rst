@@ -106,7 +106,7 @@ Cold Performance
 
 Tests using a 100gb file containing 1.07 billion 100 byte records. Immediately
 after running `/usr/bin/purge <http://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man8/purge.8.html>`_
-on a 2010 Macbook Pro with a SAMSUNG HN-M500MBB, we get:
+on a 2010 Macbook Pro with a `SAMSUNG HN-M500MBB <http://www.samsung.com/global/system/business/hdd/prdmodel/2011/6/9/440907m8.pdf>`_ :sup:`(PDF)`, we get:
 
 ::
 
