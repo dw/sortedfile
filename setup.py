@@ -23,8 +23,8 @@ from setuptools import setup
 
 setup(
     name =          'sortedfile',
-    version =       '0.1',
-    description =   'O(log N) search for sorted text files.',
+    version =       '0.2',
+    description =   'Logarithmic search for sorted text files.',
     author =        'David Wilson',
     author_email =  'dw@botanicus.net',
     license =       'Apache 2',
