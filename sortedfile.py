@@ -140,8 +140,8 @@ def bisect_seek_fixed_right(fp, n, x, lo=None, hi=None, key=None):
 
 
 def extents(fp, lo=None, hi=None):
-    """Return a tuple of the lowest and highest lines from the seekable
-    file `fp`."""
+    """Return a tuple of the first and last lines from the seekable file
+    `fp`."""
     lo = (lo - 1) if lo else 0
     hi = hi or getsize(fp)
     bisect_seek_left(fp, '', lo, hi)
@@ -155,8 +155,8 @@ def extents(fp, lo=None, hi=None):
 
 
 def extents_fixed(fp, n, lo=None, hi=None):
-    """Return a tuple of the lowest and highest `n` byte records from the
-    seekable file `fp`."""
+    """Return a tuple of the first and last `n` byte records from the seekable
+    file `fp`."""
     lo = lo or 0
     hi = hi or getsize(fp)
     bisect_seek_fixed_left(fp, n, '', lo, hi)

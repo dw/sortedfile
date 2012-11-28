@@ -70,11 +70,10 @@ And now the functions:
   past its last occurrence.
 
 ``extents(fp, lo=None, hi=None)``:
-    Return a tuple of the lowest and highest lines from the seekable file
-    ``fp``.
+    Return a tuple of the first and last lines from the seekable file ``fp``.
 
 ``extents_fixed(fp, n, lo=None, hi=None)``:
-    Return a tuple of the lowest and highest `n` byte records from the seekable
+    Return a tuple of the first and last `n` byte records from the seekable
     file `fp`.
 
 ``iter_inclusive(fp, x, y, lo=None, hi=None, key=None)``:
