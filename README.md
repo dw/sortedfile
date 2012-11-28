@@ -125,11 +125,6 @@ And the fixed record variant:
 rust! ``bigtest_cold.py`` could be tweaked to more thoroughly dodge the various
 caches at work, but seems a realistic enough test as-is.
 
-Interestingly with a budget laptop hard drive, little caching and a single
-Python function, these numbers are already in the region of Google App Engine's
-read performance, almost certainly exhibits significantly better variance, and
-the management tools (vim/head/tail/grep/cut/paste!) blow the competition away.
-
 
 ### Hot Performance
 
@@ -140,8 +135,8 @@ this is a common case.
 
 Requests are randomly generated for the most recent 4% of the file (i.e. 4GB or
 43 million records), with an initial warming that pre-caches the range most
-reads are serviced by. ``mmap.mmap`` is used in place of ``file`` as it
-favourably influences OS X's caching behaviour.
+reads are serviced by. ``mmap.mmap`` is used in place of ``file`` for its
+significant performance benefits when disk IO is fast (i.e. cached).
 
 After warmup it ``fork()``s twice to make use of both cores.
 
