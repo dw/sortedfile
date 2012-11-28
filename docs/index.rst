@@ -8,7 +8,7 @@ sortedfile
 
 .. image:: nosql-guy.jpg
 
-When handling very large text files (for example, Apache logs), it is often
+When handling large text files (for example, Apache logs), it is often
 desirable to quickly access some subset without first splitting or import to a
 database where a slow index creation process would be required.
 
