@@ -23,9 +23,10 @@ are common, the same scenario could yield in excess of 25 lookups/second.
 
 ### Interface
 
-There are 4 functions provided in two variants, one for variable length lines
-and one for fixed-length records. In addition to what is described below, each
-function takes the following optional parameters:
+Four functions are provided in two variants, one for variable length lines and
+one for fixed-length records. Fixed length versions are more efficient as they
+require ``log2(length)`` fewer steps than a bytewise search. In addition to
+what is described below, each function takes the following optional parameters:
 
 ``key``:
   If specified, indicates a function (in the style of ``sorted(..., key=)``)
