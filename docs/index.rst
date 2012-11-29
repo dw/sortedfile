@@ -105,7 +105,7 @@ Example
 Performance
 ###########
 
-Tests use a 100GB file containing 1.073 billion 100 byte records containing the
+Tests use a 100GB file containing 1.073 billion 100 byte records with the
 record number left justified to 99 bytes followed by a newline, allowing both
 line and record oriented search.
 
