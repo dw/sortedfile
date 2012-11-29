@@ -51,6 +51,18 @@ def getsize(fp):
         raise ValueError("can't get size of %r" % (fp,))
 
 
+def warm(fp, lo=None, hi=None):
+    """Encourage the seekable file `fp` to become cached by sequentially
+    reading from it."""
+    lo = lo or 0
+    hi = hi or getsize(fp)
+    fp.seek(lo)
+    s = ' '
+    while s and hi >= 0:
+        s = fp.read(10485760)
+        hi -= len(s) if s else hi
+
+
 def bisect_seek_left(fp, x, lo=None, hi=None, key=None):
     """Position the sorted seekable file `fp` such that all preceding lines are
     less than `x`. If `x` is present, the file is positioned on its first

@@ -64,10 +64,8 @@ else:
 if 'warm' in sys.argv:
     lbound = int(ubound - (ubound * .04))
     t0 = time.time()
-    dfp.seek(lbound * reclen)
-    for i, _ in enumerate(iter(lambda: dfp.read(10485760), '')):
-        if not i % 100:
-            print 'warm %dmb' % (i * 10)
+    print 'warm...'
+    sortedfile.warm(dfp, lbound * reclen)
     print 'done cache warm in %dms' % (1000 * (time.time() - t0))
 
 if 'span100' in sys.argv:
