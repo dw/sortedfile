@@ -53,13 +53,16 @@ if 'mmap' in sys.argv:
 else:
     dfp = fp
 
+def keyfn(s):
+    return int(s.partition(' ')[0])
+
 if 'fixed' in sys.argv:
     print 'using fixed'
     do_iter = functools.partial(sortedfile.iter_fixed_inclusive,
-        dfp, reclen, hi=hi, key=int)
+        dfp, reclen, hi=hi, key=keyfn)
 else:
     do_iter = functools.partial(sortedfile.iter_inclusive,
-        dfp, hi=hi, key=int)
+        dfp, hi=hi, key=keyfn)
 
 if 'warm' in sys.argv:
     lbound = int(ubound - (ubound * .04))

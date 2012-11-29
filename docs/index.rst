@@ -107,7 +107,9 @@ Performance
 
 Tests use a 100GB file containing 1.073 billion 100 byte records with the
 record number left justified to 99 bytes followed by a newline, allowing both
-line and record oriented search.
+line and record oriented search. The key function uses ``str.partition()`` to
+extract the record number before passing it to ``int()``, thus emulating
+extracting the key from a record populated with data other than whitespace.
 
 
 Cold Cache
@@ -165,10 +167,7 @@ And the fixed variant:
     751375 recs in 60.01s (avg 79us dist 0mb / 12521.16/sec)
 
 Around 6250 random reads per second per core over 43 million records from a set
-of 1 billion, using only plain sorted text and a 23 line function. Granted it
-only parses integers, however even if the remainder contained say, JSON, a
-single ``str.partition()`` would not hurt. Processing cost for the returned
-data may also vastly outweigh lookup cost.
+of 1 billion, using only plain sorted text and a 23 line function.
 
 And for consecutive sequential reads:
 
