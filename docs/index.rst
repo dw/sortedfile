@@ -118,22 +118,18 @@ on a 2010 Macbook Pro with a $50 Samsung HN-M500MBB:
 
 ::
 
-    $ python bigtest.py 
-    46 recs in 5.08s (avg 110ms dist 31214mb / 9.05/sec)
-    ...
+    $ ./bench.py 
     770 recs in 60.44s (avg 78ms dist 33080mb / 12.74/sec)
 
 And the fixed record variant:
 
 ::
 
-    $ python bigtest.py fixed
-    85 recs in 5.01s (avg 58ms dist 33669mb / 16.96/sec)
-    ...
+    $ ./bench.py fixed
     1160 recs in 60.28s (avg 51ms dist 35038mb / 19.24/sec)
 
 19 random searches per second on a billion records, not bad for budget spinning
-rust. ``bigtest.py`` could be tweaked to more thoroughly dodge the various
+rust. ``bench.py`` could be tweaked to more thoroughly dodge the various
 caches in play, but seems a fair test as-is.
 
 Reading 100 consecutive records following each search provides some indication
@@ -141,15 +137,14 @@ of throughput in a common case:
 
 ::
 
-    $ python bigtest.py fixed span100
-    ...
+    $ ./bench.py fixed span100
     101303 recs in 60.40s (avg 0.596ms / 1677.13/sec)
 
 
 Hot Cache
 +++++++++
 
-``bigtest.py warm`` is more interesting: instead of load uniformly distributed
+``bench.py warm`` is more interesting: instead of load uniformly distributed
 over the set, readers only care about recent data. Requests are generated for
 the bottom 4% of the file (i.e. 4GB or 43 million records), with an initial
 warming that pre-caches this region. ``mmap.mmap`` is used in place of ``file``
@@ -159,16 +154,14 @@ After warmup, ``fork()`` to avail of both cores:
 
 ::
 
-    $ python bigtest.py warm mmap smp
-    ...
+    $ ./bench.py warm mmap smp
     611674 recs in 60.00s (avg 98us dist 0mb / 10194.00/sec)
 
 And the fixed variant:
 
 ::
 
-    $ python bigtest.py fixed warm mmap smp
-    ...
+    $ ./bench.py fixed warm mmap smp
     751375 recs in 60.01s (avg 79us dist 0mb / 12521.16/sec)
 
 Around 6250 random reads per second per core over 43 million records from a set
@@ -181,8 +174,7 @@ And for consecutive sequential reads:
 
 ::
 
-    $ python bigtest.py fixed mmap smp warm span100
-    ...
+    $ ./bench.py fixed mmap smp warm span100
     15396036 recs in 60.01s (avg 0.004ms / 256578.04/sec)
 
 
