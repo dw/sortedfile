@@ -72,6 +72,8 @@ if 'warm' in sys.argv:
 
 if 'span100' in sys.argv:
     span = 100
+elif 'span1000' in sys.argv:
+    span = 1000
 else:
     span = 0
 

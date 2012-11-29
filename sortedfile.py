@@ -39,7 +39,8 @@ except ImportError:
 
 
 def getsize(fp):
-    """Return the size of `fp` if possible, otherwise raise ValueError."""
+    """Return the size of `fp` if it is a physical file, ``StringIO``, or
+    ``mmap.mmap``, otherwise raise ValueError."""
     if hasattr(fp, 'getvalue'):
         return len(fp.getvalue())
     elif _mmap and isinstance(fp, _mmap):
@@ -168,7 +169,7 @@ def extents_fixed(fp, n, lo=None, hi=None):
 
 
 def iter_inclusive(fp, x, y, lo=None, hi=None, key=None):
-    """Iterate lines of the sorted seekable file `fp` satisfying the condition
+    """Iterate lines of the sorted seekable file `fp` satisfying
     `x <= line <= y`."""
     key = key or (lambda s: s)
     bisect_seek_left(fp, x, lo, hi, key)
@@ -177,7 +178,7 @@ def iter_inclusive(fp, x, y, lo=None, hi=None, key=None):
 
 
 def iter_exclusive(fp, x, y, lo=None, hi=None, key=None):
-    """Iterate lines of the sorted seekable file `fp` satisfying the condition
+    """Iterate lines of the sorted seekable file `fp` satisfying
     `x < line < y`."""
     key = key or (lambda s: s)
     bisect_seek_right(fp, x, lo, hi, key)
@@ -186,8 +187,8 @@ def iter_exclusive(fp, x, y, lo=None, hi=None, key=None):
 
 
 def iter_fixed_inclusive(fp, n, x, y, lo=None, hi=None, key=None):
-    """Iterate `n` byte records of the sorted seekable file `fp` satisfying the
-    condition `x <= record <= y`."""
+    """Iterate `n` byte records of the sorted seekable file `fp` satisfying
+    `x <= record <= y`."""
     key = key or (lambda s: s)
     bisect_seek_fixed_left(fp, n, x, lo, hi, key)
     pred = lambda s: x <= key(s) <= y
@@ -195,8 +196,8 @@ def iter_fixed_inclusive(fp, n, x, y, lo=None, hi=None, key=None):
 
 
 def iter_fixed_exclusive(fp, n, x, y, lo=None, hi=None, key=None):
-    """Iterate `n` byte records of the sorted seekable file `fp` satisfying the
-    condition `x < record < y`."""
+    """Iterate `n` byte records of the sorted seekable file `fp` satisfying
+    `x < record < y`."""
     key = key or (lambda s: s)
     bisect_seek_fixed_right(fp, n, x, lo, hi, key)
     pred = lambda s: x < key(s) < y
