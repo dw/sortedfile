@@ -10,17 +10,16 @@ sortedfile
 
 
 When handling large text files it is often desirable to access some subset
-without first splitting, or importing to a database where an index creation
-process is required. When data is already sorted, such as in the case of logs
-or time series data, we can exploit this to efficiently locate interesting
-subsets.
+without first splitting, or using a database where import and index creation is
+required. When data is already sorted, such as with logs or time series, this
+can be exploited to efficiently locate interesting subsets. This module is
+analogous to the `bisect <http://docs.python.org/2/library/bisect.html>`_
+module, allowing search of sorted file content in logarithmic time.
 
-Records are located using binary search in O(log N) with the limiting factor
-being disk seeks. Given a 1 terabyte file, 40 seeks are required, resulting in
-an *expected* 600ms search time on a mechanical disk under pessimistic
-assumptions. Things are better on SSDs where <0.16ms seeks are common: the same
-scenario could yield in excess of 150 lookups/second, and significantly better
-when allowing for the caches in a modern computer.
+Given a 1 terabyte file, 40 seeks are required, resulting in an *expected*
+600ms search on a mechanical disk under pessimistic assumptions. With SSDs
+having <0.16ms seeks the same scenario could yield 150 searches/second, and
+significantly more when allowing for caching.
 
 
 Common Parameters
@@ -91,7 +90,7 @@ Example
 ::
 
     def parse_ts(s):
-        """Parse a UNIX syslog format date out of `s`."""
+        """Parse a UNIX syslog date out of `s`."""
         return time.strptime(s[:15], '%b %d %H:%M:%S')
 
     # Copy a time range from syslog to stdout.
@@ -168,7 +167,7 @@ And the fixed variant:
     751375 recs in 60.01s (avg 79us dist 0mb / 12521.16/sec)
 
 Around 6250 random reads per second per core over 43 million records from a set
-of 1 billion, using only plain sorted text and a 23 line function.
+of 1 billion, using only sorted text and a 23 line function.
 
 And for consecutive sequential reads:
 
@@ -203,18 +202,17 @@ searches followed by sequential reads a larger buffer may be preferable.
 Interesting Uses
 ++++++++++++++++
 
-Since the ``bisect`` functions re-check the input file's size on each call when
-``hi`` isn't specified, it is trivial to have concurrent readers and writers,
-so long as writers take care to open the file as ``O_APPEND``, and emit records
-no larger than the maximum atomic write size for the operating system. On
-Linux, since ``write()`` holds a lock, it should be possible to write records
-of arbitrary size.
+Since the input's size is checked on each call when ``hi`` isn't specified, it
+is trivial to have concurrent readers and writers, so long as writers take care
+to open the file as ``O_APPEND``, and emit records no larger than the maximum
+atomic write size for the operating system. On Linux, since ``write()`` holds a
+lock, it should be possible to write records of arbitrary size.
 
 However since each region's midpoint will change as the file grows, this mode
-may not interact well with OS caching without further mitigation. Another
-caveat is that under IO/scheduling contention, it is possible for writes from
-multiple processes to occur out of order, although depending on the granularity
-of the key this may not be a problem.
+may not interact well with caching without further mitigation. Another caveat
+is that under IO/scheduling contention, it is possible for writes from multiple
+processes to occur out of order, although depending on the granularity of the
+key this may not be a problem.
 
 
 Improvements
