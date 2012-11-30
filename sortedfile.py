@@ -175,7 +175,7 @@ def extents_fixed(fp, n, lo=None, hi=None):
     hi = hi or getsize(fp)
     bisect_seek_fixed_left(fp, n, '', lo, hi)
     low = fp.read(n)
-    recs = (hi - lo) / n
+    recs = (hi - lo) // n
     fp.seek(lo + (n * (recs - 1)))
     return low, fp.read(n)
 
