@@ -78,12 +78,17 @@ elif 'span1000' in sys.argv:
 else:
     span = 0
 
+nodes = 1
+for bleh in sys.argv:
+    if bleh.startswith('smp'):
+        nodes = int(bleh[3:] or '2')
+
+
 start_time = time.time()
 count = 0
 total_distance = 0
 last_stats = time.time()
 
-nodes = 2 if 'smp' in sys.argv else 1
 rfd, wfd = os.pipe()
 rfp = os.fdopen(rfd, 'r', 8)
 
@@ -97,7 +102,17 @@ while monitor:
          1000 / ((1000 * (last_stats - start_time)) / count))
 
 for _ in range(nodes - 1):
-    os.fork()
+    if not os.fork():
+        break
+
+random.seed(time.time() * os.getpid())
+
+if dfp is fp:
+    # Unshare
+    dfp2 = file(filename, 'r', reclen)
+    os.dup2(dfp2.fileno(), dfp.fileno())
+    dfp2.close()
+
 
 while True:
     record = random.randint(lbound, ubound)
