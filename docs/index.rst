@@ -214,6 +214,12 @@ is that under IO/scheduling contention, it is possible for writes from multiple
 processes to occur out of order, although depending on the granularity of the
 key this may not be a problem.
 
+Another use is when dealing with many small objects (e.g. small strings or
+lists of integers) that can be conveniently serialized in-order to a
+``StringIO``. Doing so would reduce in-memory overhead while still allowing
+fast access, potentially permitting a job to complete that may otherwise not
+fit in RAM.
+
 
 Improvements
 ++++++++++++
