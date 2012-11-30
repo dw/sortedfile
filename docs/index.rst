@@ -11,15 +11,16 @@ sortedfile
 
 When handling large text files it is often desirable to access some subset
 without first splitting, or importing to a database where an index creation
-process is required. When data is already sorted (inherently in the case of
-logs or time series data, as they're generated in time order), we can exploit
-this property using binary search to efficiently locate interesting subsets.
+process is required. When data is already sorted, such as in the case of logs
+or time series data, we can exploit this to efficiently locate interesting
+subsets.
 
-Due to the nature of binary search this is O(log N) with the limiting factor
-being the speed of a disk seek. Given a 1 terabyte file, 40 seeks are required,
-resulting in an *expected* 600ms search time on a rusty old disk given
-pessimistic assumptions. Things look better on an SSD where less than 1ms seeks
-are common: the same scenario could yield in excess of 25 lookups/second.
+Records are located using binary search in O(log N) with the limiting factor
+being disk seeks. Given a 1 terabyte file, 40 seeks are required, resulting in
+an *expected* 600ms search time on a mechanical disk under pessimistic
+assumptions. Things are better on SSDs where <1ms seeks are common: the same
+scenario could yield in excess of 25 lookups/second, and significantly better
+when allowing for the caches in a modern computer.
 
 
 Common Parameters
@@ -50,7 +51,7 @@ Interface
 
 Five functions are provided in two variants, one for variable length lines and
 one for fixed-length records. Fixed length versions are more efficient as they
-require ``log(length)`` fewer steps than bytewise search.
+require ``log(length)`` fewer steps.
 
 For line oriented functions, a `seekable file` is any object with functional
 ``readline()`` and ``seek()``, whereas for record oriented functions it is any
@@ -108,15 +109,15 @@ Performance
 Tests use a 100GB file containing 1.073 billion 100 byte records with the
 record number left justified to 99 bytes followed by a newline, allowing both
 line and record oriented search. The key function uses ``str.partition()`` to
-extract the record number before passing it to ``int()``, thus emulating
-extracting the key from a record populated with data other than whitespace.
+extract the record number before passing it to ``int()``, emulating extraction
+from a record populated with data other than whitespace.
 
 
 Cold Cache
 ++++++++++
 
-After running `/usr/bin/purge <http://developer.apple.com/library/mac/#documentation/Darwin/Reference/ManPages/man8/purge.8.html>`_
-on a 2010 Macbook Pro with a $50 Samsung HN-M500MBB:
+After clearing the buffer cache on a 2010 Macbook Pro with a Samsung
+HN-M500MBB:
 
 ::
 
@@ -216,14 +217,14 @@ multiple processes to occur out of order, although depending on the granularity
 of the key this may not be a problem.
 
 
-Future Improvements
-+++++++++++++++++++
+Improvements
+++++++++++++
 
-It should be possible to squeeze better performance out of ``file`` by paying
-attention to the operating system's needs, in particular with regard to read
-alignment and the use of ``posix_fadvise``. Single-threaded ``file``
-performance is significantly worse than ``mmap.mmap``, this is almost certainly
-not inherent, more likely it is due to a badly designed test.
+It should be possible to squeeze more performance from ``file`` by paying
+attention to the operating system's needs, for example read alignment and
+``posix_fadvise``. Single-threaded ``file`` performance is significantly worse
+than ``mmap.mmap``, this is almost certainly not inherent, more likely it is
+due to a badly designed test.
 
 Additionally unlike ``mmap.mmap``, calling ``file.seek()`` invokes a real
 system call, which may be generating more work than is apparent. The
