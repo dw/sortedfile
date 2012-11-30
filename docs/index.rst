@@ -18,8 +18,8 @@ subsets.
 Records are located using binary search in O(log N) with the limiting factor
 being disk seeks. Given a 1 terabyte file, 40 seeks are required, resulting in
 an *expected* 600ms search time on a mechanical disk under pessimistic
-assumptions. Things are better on SSDs where <1ms seeks are common: the same
-scenario could yield in excess of 25 lookups/second, and significantly better
+assumptions. Things are better on SSDs where <0.16ms seeks are common: the same
+scenario could yield in excess of 150 lookups/second, and significantly better
 when allowing for the caches in a modern computer.
 
 
