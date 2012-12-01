@@ -52,8 +52,8 @@ def getsize(fp):
 
 
 def warm(fp, lo=None, hi=None):
-    """Encourage the seekable file `fp` to become cached by sequentially
-    reading from it."""
+    """Encourage the seekable file `fp` to become cached by reading from it
+    sequentially."""
     lo = lo or 0
     hi = hi or getsize(fp)
     fp.seek(lo)
@@ -151,6 +151,36 @@ def bisect_seek_fixed_right(fp, n, x, lo=None, hi=None, key=None):
             rlo = mid + 1
 
     fp.seek(lo + (rlo * n))
+
+
+def bisect_func_left(x, lo, hi, func):
+    """Bisect `func(i)`, returning an index such that preceding values are less
+    than `x`. If `x` is present, the returned index is its first occurrence.
+    EOF is assumed if `func` returns None."""
+    while lo < hi:
+        mid = (lo + hi) // 2
+        k = func(mid)
+        if k is not None and k < x:
+            lo = mid + 1
+        else:
+            hi = mid
+
+    return lo
+
+
+def bisect_func_right(x, lo, hi, func):
+    """Bisect `func(i)`, returning an index such that consecutive values are
+    greater than `x`. If `x` is present, the returned index is past its last
+    occurrence. EOF is assumed if `func` returns None."""
+    while lo < hi:
+        mid = (lo + hi) // 2
+        k = key_at(mid)
+        if k is not None and x < k:
+            hi = mid
+        else:
+            lo = mid + 1
+
+    return lo
 
 
 def extents(fp, lo=None, hi=None):

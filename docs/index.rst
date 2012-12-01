@@ -45,7 +45,7 @@ optional parameters:
   ``getsize()`` is used to probe the file size.
 
 
-Interface
+Functions
 #########
 
 Five functions are provided in two variants, one for variable length lines and
@@ -57,8 +57,8 @@ For line oriented functions, a `seekable file` is any object with functional
 object with ``read()`` and ``seek()``.
 
 
-Search Functions
-++++++++++++++++
+File Search
++++++++++++
 
 .. autofunction:: sortedfile.bisect_seek_left
 .. autofunction:: sortedfile.bisect_seek_right
@@ -66,8 +66,8 @@ Search Functions
 .. autofunction:: sortedfile.bisect_seek_fixed_right
 
 
-Iteration Functions
-+++++++++++++++++++
+File Iteration
+++++++++++++++
 
 .. autofunction:: sortedfile.iter_exclusive
 .. autofunction:: sortedfile.iter_inclusive
@@ -75,8 +75,18 @@ Iteration Functions
 .. autofunction:: sortedfile.iter_fixed_inclusive
 
 
-Utility Functions
-+++++++++++++++++
+Generic Search
+++++++++++++++
+
+These purely implement the bisection algorithm, using a user-provided function
+to access keys to compare. ``lo`` and ``hi`` must always be specified.
+
+.. autofunction:: sortedfile.bisect_func_left
+.. autofunction:: sortedfile.bisect_func_right
+
+
+Utilities
++++++++++
 
 .. autofunction:: sortedfile.extents
 .. autofunction:: sortedfile.extents_fixed
