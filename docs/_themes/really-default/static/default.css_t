@@ -308,3 +308,11 @@ div.viewcode-block:target {
     border-top: 1px solid #ac9;
     border-bottom: 1px solid #ac9;
 }
+
+table.highlighttable {
+    width: 100%;
+}
+
+td.code {
+    width: 100%;
+}
