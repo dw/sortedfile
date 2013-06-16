@@ -8,7 +8,6 @@ sortedfile
     :hidden:
     :maxdepth: 2
 
-
 When handling large text files it is often desirable to access some subset
 without first splitting, or using a database where import and index creation is
 required. When data is already sorted, such as with logs or time series, this
@@ -97,17 +96,21 @@ Utilities
 Example
 #######
 
+Dump the past 15 minutes syslog:
+
 ::
+
+    YEAR = time.localtime().tm_year
 
     def parse_ts(s):
         """Parse a UNIX syslog date out of `s`."""
-        return time.strptime(s[:15], '%b %d %H:%M:%S')
+        tt = time.strptime(s[:15], '%b %d %H:%M:%S')
+        return time.struct_time((YEAR,) + tt[1:])
 
-    # Copy a time range from syslog to stdout.
     it = sortedfile.iter_inclusive(
         fp=open('/var/log/messages'),
-        x=parse_ts('Nov 20 00:00:00'),
-        y=parse_ts('Nov 25 23:59:59'),
+        x=time.localtime(time.time() - (60 * 15)),
+        y=time.localtime(),
         key=parse_ts)
     sys.stdout.writelines(it)
 
@@ -224,11 +227,10 @@ is that under IO/scheduling contention, it is possible for writes from multiple
 processes to occur out of order, although depending on the granularity of the
 key this may not be a problem.
 
-Another use is when dealing with many small objects (e.g. small strings or
-lists of integers) that can be conveniently serialized in-order to a
-``StringIO``. Doing so would reduce in-memory overhead while still allowing
-fast access, potentially permitting a job to complete that may otherwise not
-fit in RAM.
+When dealing with many small objects (e.g. lists of strings or integers) that
+can be easily serialized in-order to a ``StringIO``, RAM use can be greatly
+reduced while still allowing fast access. For example with lists of integers,
+memory usage drops by up to 90% on a 64 bit machine.
 
 
 Improvements
