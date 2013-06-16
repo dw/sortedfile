@@ -31,6 +31,7 @@ filename = '_big.dat'
 filesize = mb * 1024 * 100
 reclen = 100
 ubound = (filesize / reclen) - 1
+ubound = (25302312200 / 100) - 1
 lbound = 0
 
 
@@ -38,7 +39,7 @@ if 'make' in sys.argv:
     if os.path.exists(filename):
         print 'Delete old', filename, 'first'
         sys.exit(1)
-    with open(filename, 'w', 10 * mb) as fp:
+    with open(filename, 'w', 300 * mb) as fp:
         for i in xrange(filesize / reclen):
             fp.write('%-*d\n' % (reclen - 1, i))
     sys.exit(1)
@@ -56,13 +57,18 @@ else:
 def keyfn(s):
     return int(s.partition(' ')[0])
 
+if 'cap' in sys.argv:
+    lo = lbound * reclen
+else:
+    lo = 0
+
 if 'fixed' in sys.argv:
     print 'using fixed'
     do_iter = functools.partial(sortedfile.iter_fixed_inclusive,
-        dfp, reclen, hi=hi, key=keyfn)
+        dfp, reclen, lo=lo, hi=hi, key=keyfn)
 else:
     do_iter = functools.partial(sortedfile.iter_inclusive,
-        dfp, hi=hi, key=keyfn)
+        dfp, lo=lo, hi=hi, key=keyfn)
 
 if 'warm' in sys.argv:
     lbound = int(ubound - (ubound * .04))
