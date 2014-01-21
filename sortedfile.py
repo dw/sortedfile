@@ -165,7 +165,7 @@ def bisect_func_left(x, lo, hi, func):
         else:
             hi = mid
 
-    return lo
+    return lo, k
 
 
 def bisect_func_right(x, lo, hi, func):
@@ -174,13 +174,13 @@ def bisect_func_right(x, lo, hi, func):
     occurrence. EOF is assumed if `func` returns None."""
     while lo < hi:
         mid = (lo + hi) // 2
-        k = key_at(mid)
+        k = func(mid)
         if k is not None and x < k:
             hi = mid
         else:
             lo = mid + 1
 
-    return lo
+    return lo, k
 
 
 def extents(fp, lo=None, hi=None):
